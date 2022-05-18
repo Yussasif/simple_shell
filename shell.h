@@ -1,46 +1,62 @@
 #ifndef SHELL
 #define SHELL
 
-#include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
+#include <stdio.h>
 #include <string.h>
-#include <dirent.h>
-#include <stddef.h>
-#include <errno.h>
+#include <unistd.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
-#define TOKENS_BUFFER_SIZE 64
-#define LINE_SIZE 1024
-#define TOKEN_DELIMITERS " \t\r\n\a"
-extern char **environ;
+#include <wait.h>
+#include <fcntl.h>
+#include <dirent.h>
+#include <signal.h>
+
 /**
- * struct builtins - Has builtins and associated funcs
- * @arg: Builtins name
- * @builtin: Mathcing builtin func
+ * struct list - linked list for environmental variables
+ * @var: holds environmental variable string
+ * @next: points to next node
  */
-typedef struct builtins
+typedef struct list
 {
-	char *arg;
-	void (*builtin)(char **args, char *line, char **env);
-} builtins_t;
-void shell(int ac, char **av, char **env);
-char *_getline(void);
-char **split_line(char *line);
-int execute_prog(char **args, char *line, char **env, int flow);
-int check_for_builtins(char **args, char *line, char **env);
-int launch_prog(char **args);
-void exit_shell(char **args, char *line, char **env);
-void env_shell(char **args, char *line, char **env);
+	char *var;
+	struct list *next;
+
+} list_t;
+
+/* function prototypes */
+int prompt(char **env);
+void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
+size_t get_line(char **str);
+int t_strlen(char *str, int pos, char delm);
+char *ignore_space(char *str);
+char **_str_tok(char *str, char *delm);
+char **c_str_tok(char *str, char *delm);
+char *_strcat(char *dest, char *src);
+char *_strdup(char *str);
+char *_strcpy(char *dest, char *src);
 int _strcmp(char *s1, char *s2);
-char *find_path(char *args, char *tmp, char *er);
-char *search_cwd(char *filename, char *er);
-int bridge(char *check, char **args);
-void prompt(void);
-int builtins_checker(char **args);
-char *save_path(char *tmp, char *path);
-char *read_dir(char *er, struct dirent *s, char *fi, int l, char *p, char *t);
-char *_getenv(char *env);
-char *_strstr(char *haystack, char *needle);
-int _strlen(char *s);
+int _cd(char **str, list_t *env, int num);
+int built_in(char **token, list_t *env, int num, char **command);
+void non_interactive(list_t *env);
+char *_which(char *str, list_t *env);
+int __exit(char **s, list_t *env, int num, char **command);
+int _execve(char *argv[], list_t *env, int num);
+void free_double_ptr(char **str);
+void free_linked_list(list_t *list);
+int _env(char **str, list_t *env);
+char *get_env(char *str, list_t *env);
+list_t *env_linked_list(char **env);
+list_t *add_end_node(list_t **head, char *str);
+size_t print_list(list_t *h);
+int delete_nodeint_at_index(list_t **head, int index);
+int _unsetenv(list_t **env, char **str);
+int _setenv(list_t **env, char **str);
+int find_env(list_t *env, char *str);
+void not_found(char *str, int num, list_t *env);
+void cant_cd_to(char *str, int c_n, list_t *env);
+void illegal_number(char *str, int c_n, list_t *env);
+char *int_to_string(int num);
+
 #endif

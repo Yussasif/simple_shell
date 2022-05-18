@@ -1,21 +1,18 @@
 #include "shell.h"
 
 /**
- * main - Entry point for shell, handles args to shell
- * @ac: Arg count
- * @av: Arr of args
- * @env: Environment
- * Return: 0;
+ * main - creates a simple shell
+ * @ac: argument count
+ * @av: argument vectors
+ * @env: environmental variables
+ * Return: 0 on success
  */
 int main(int ac, char **av, char **env)
 {
-	if (!ac)
-		(void)ac;
-	if (!av)
-		(void)av;
-	if (!env)
-		(void)env;
-	shell(ac, av, env);
+	(void)ac;
+	(void)av;
+
+	prompt(env);
+
 	return (0);
 }
-
