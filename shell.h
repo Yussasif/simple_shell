@@ -1,78 +1,46 @@
-#ifndef SHELL_H
-#define SHELL_H
+#ifndef SHELL
+#define SHELL
 
-/* Header Files */
-#include <unistd.h>
 #include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/wait.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
+#include <dirent.h>
+#include <stddef.h>
 #include <errno.h>
-
-/* Macros */
-#define TRUE 1
-#define FALSE 0
-#define BUFSIZE 1024
-
-/* Global Variables */
+#include <sys/types.h>
+#include <sys/wait.h>
+#define TOKENS_BUFFER_SIZE 64
+#define LINE_SIZE 1024
+#define TOKEN_DELIMITERS " \t\r\n\a"
 extern char **environ;
-
 /**
- * struct builtin_t - Structure for builtin commands
- * @cmd: the command's name
- * @f: the appropriate function to act on command
+ * struct builtins - Has builtins and associated funcs
+ * @arg: Builtins name
+ * @builtin: Mathcing builtin func
  */
-typedef struct builtin_t
+typedef struct builtins
 {
-	char *cmd;
-	int (*f)(char **, int, char *);
-} builtin_t;
-
-/*----------//My Function Prototypes\\----------*/
-/*==============================================*/
-
-/* In executor.c */
-int execute(char **cmd, char *filename);
-
-/* In prompt.c */
-void init_prompt(void);
-
-/* In parser.c */
-char *rm_newline(char *line);
-char **parse_input(char *line);
-char *build_path(char *token, char *value);
-int check_cmd_path(char **cmd);
-
-/* In string.c */
-int _strlen(const char *s);
-char *_strstr(char *haystack, char *needle);
-char *_strcpy(char *dest, const char *src);
-char *_strcat(char *dest, const char *src);
+	char *arg;
+	void (*builtin)(char **args, char *line, char **env);
+} builtins_t;
+void shell(int ac, char **av, char **env);
+char *_getline(void);
+char **split_line(char *line);
+int execute_prog(char **args, char *line, char **env, int flow);
+int check_for_builtins(char **args, char *line, char **env);
+int launch_prog(char **args);
+void exit_shell(char **args, char *line, char **env);
+void env_shell(char **args, char *line, char **env);
 int _strcmp(char *s1, char *s2);
-
-/* In getenv.c */
-char *_getenv(const char *name);
-
-/* In printers.c */
-int _putchar(int c);
-int print(char *str);
-
-/* In utils.c */
-void free_memory_p(char *);
-void free_memory_pp(char **);
-int cmp(const char *s1, const char *s2);
-int _atoi(char *s);
-int _isalpha(char c);
-
-/* In more_string.c */
-char *_strdup(char *s);
-
-/* In builtins.c */
-int exit_cmd(char **, int, char *);
-int env_cmd(char **, int, char *);
-builtin_t is_builtin(char *cmd);
-int (*check_builtins(char **))(char **, int, char *);
-
+char *find_path(char *args, char *tmp, char *er);
+char *search_cwd(char *filename, char *er);
+int bridge(char *check, char **args);
+void prompt(void);
+int builtins_checker(char **args);
+char *save_path(char *tmp, char *path);
+char *read_dir(char *er, struct dirent *s, char *fi, int l, char *p, char *t);
+char *_getenv(char *env);
+char *_strstr(char *haystack, char *needle);
+int _strlen(char *s);
 #endif
